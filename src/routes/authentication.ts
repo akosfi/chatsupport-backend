@@ -14,7 +14,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/register', (req, res, next) => {
-    res.sendFile(__dirname + '/' + 'public/register.html', {root: '../'});
+    res.render('pages/register');
 });
 
 router.post('/register', (req, res, next) => {
@@ -29,6 +29,7 @@ router.post('/register', (req, res, next) => {
         res.redirect('/chat');
     })
     .catch((error: any) => {
+        console.log(error);
         res.redirect('/register');
     });
 });

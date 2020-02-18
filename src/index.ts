@@ -36,20 +36,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
      console.log(`Server is running in http://localhost:${PORT}`)
 });
-
-/*
-
-GET /login
-POST /login
-GET /register
-POST /register
-
-GET /chats
-GET /create-chat
-GET /chat/{id:int}
-
-//api - from client
-GET /api/messages/ -gets pending messages
-POST /api/messages/ -send message 
-
-*/

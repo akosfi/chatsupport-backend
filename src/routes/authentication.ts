@@ -1,10 +1,11 @@
 import express from "express";
 
-var router = express.Router();
+const db = require('../db/models'); //TODO migrate sequelize to typescript
+
+const router = express.Router();
 
 router.get('/login', (req, res, next) => {
     res.render('pages/index');
-    next();
 });
 
 router.post('/login', (req, res, next) => {
@@ -14,12 +15,22 @@ router.post('/login', (req, res, next) => {
 
 router.get('/register', (req, res, next) => {
     res.sendFile(__dirname + '/' + 'public/register.html', {root: '../'});
-    next();
 });
 
 router.post('/register', (req, res, next) => {
-    res.send('register');
-    next();
+    db.User.create({
+        full_name: req.body.full_name,
+        email: req.body.email,
+        password: req.body.password
+    })
+    .then((user: any) => {
+        req.session.user = user.dataValues;
+        console.log(user.dataValues);
+        res.redirect('/chat');
+    })
+    .catch((error: any) => {
+        res.redirect('/register');
+    });
 });
 
 export {router};

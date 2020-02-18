@@ -1,15 +1,28 @@
 import express from "express";
 
 const db = require('../db/models'); //TODO migrate sequelize to typescript
+const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
 router.get('/login', (req, res, next) => {
-    return res.render('pages/index');
+    return res.render('pages/login');
 });
 
 router.post('/login', (req, res, next) => {
-    return res.send('login');
+    const username = req.body.username;
+    const password = req.body.password;
+
+    return db.User.findOne({ where: { username: username } }).then((user: any) => {
+        if (!user) {
+            return res.redirect('/login');
+        } else if (!bcrypt.compareSync(password, user.password)) {
+            return res.redirect('/login');
+        } else {
+            req.session.user = user.dataValues;
+            return res.redirect('/chat');
+        }
+    });
 });
 
 router.get('/register', (req, res, next) => {
@@ -23,12 +36,10 @@ router.post('/register', (req, res, next) => {
         password: req.body.password
     })
     .then((user: any) => {
-        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
         req.session.user = user.dataValues;
         return res.redirect('/chat');
     })
     .catch((error: any) => {
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         return res.redirect('/register');
     });
 });

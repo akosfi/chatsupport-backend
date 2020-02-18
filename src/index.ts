@@ -1,12 +1,13 @@
 import express from "express";
-import {router as messageRouter} from './routes/messages';
-import {router as authenticationRouter} from './routes/authentication';
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
 import {authMW} from "./middlewares/auth/authMW";
 import {inverseAuthMW} from "./middlewares/auth/inverseAuthMW";
+import {router as messageRouter} from './routes/messages';
+import {router as authenticationRouter} from './routes/authentication';
+import {router as chatRouter} from './routes/chat';
 
 const db = require('./db/models'); //TODO migrate sequelize to typescript
 
@@ -15,7 +16,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 app.use(express.static(__dirname + '/public'));
 app.use(session({
     secret: 'tuti5os',
@@ -27,8 +28,8 @@ app.use(session({
 }));
 
 app.use('/api/messages', messageRouter);
-app.use('/chat', authMW, messageRouter);
-app.use('/', authenticationRouter);
+app.use('/chat', authMW, chatRouter);
+app.use('/', inverseAuthMW ,authenticationRouter);
 
 
 

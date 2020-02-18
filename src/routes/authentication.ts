@@ -5,32 +5,31 @@ const db = require('../db/models'); //TODO migrate sequelize to typescript
 const router = express.Router();
 
 router.get('/login', (req, res, next) => {
-    res.render('pages/index');
+    return res.render('pages/index');
 });
 
 router.post('/login', (req, res, next) => {
-    res.send('login');
-    next();
+    return res.send('login');
 });
 
 router.get('/register', (req, res, next) => {
-    res.render('pages/register');
+    return res.render('pages/register');
 });
 
 router.post('/register', (req, res, next) => {
-    db.User.create({
-        full_name: req.body.full_name,
+    return db.User.create({
+        username: req.body.username,
         email: req.body.email,
         password: req.body.password
     })
     .then((user: any) => {
+        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
         req.session.user = user.dataValues;
-        console.log(user.dataValues);
-        res.redirect('/chat');
+        return res.redirect('/chat');
     })
     .catch((error: any) => {
-        console.log(error);
-        res.redirect('/register');
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        return res.redirect('/register');
     });
 });
 

@@ -13,7 +13,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/register', (req, res, next) => {
-    res.send('register');
+    res.sendFile(__dirname + '/' + 'public/register.html', {root: '../'});
     next();
 });
 

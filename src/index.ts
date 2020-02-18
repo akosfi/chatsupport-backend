@@ -12,6 +12,8 @@ const db = require('./db/models'); //TODO migrate sequelize to typescript
 
 const app = express();
 
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views')
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));

@@ -8,6 +8,8 @@ import session from "express-session";
 import {authMW} from "./middlewares/auth/authMW";
 import {inverseAuthMW} from "./middlewares/auth/inverseAuthMW";
 
+const db = require('./db/models'); //TODO migrate sequelize to typescript
+
 const app = express();
 
 app.use(cookieParser());
@@ -21,7 +23,6 @@ app.use(session({
         expires: new Date(Date.now() + 600000)
     }
 }));
-
 
 app.use('/api/messages', messageRouter);
 app.use('/chat', authMW, messageRouter);

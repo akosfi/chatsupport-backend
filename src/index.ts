@@ -3,11 +3,8 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
-import {authMW} from "./middlewares/auth/authMW";
-import {inverseAuthMW} from "./middlewares/auth/inverseAuthMW";
-import {router as messageRouter} from './routes/messages';
-import {router as authenticationRouter} from './routes/authentication';
-import {router as chatRouter} from './routes/chat';
+
+import {router as appRouter} from './routes';
 
 const db = require('./db/models'); //TODO migrate sequelize to typescript
 
@@ -26,10 +23,7 @@ app.use(session({
         expires: new Date(Date.now() + 600000)
     }
 }));
-
-app.use('/api/messages', messageRouter);
-app.use('/chat', authMW, chatRouter);
-app.use('/', inverseAuthMW ,authenticationRouter);
+app.use(appRouter);
 
 
 

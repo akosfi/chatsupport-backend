@@ -1,7 +1,7 @@
 'use strict';
-const bcrypt = require('bcrypt');
+import { genSaltSync, hashSync } from 'bcrypt';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     username: DataTypes.STRING,
     email: DataTypes.STRING,
@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     hooks: {
       beforeCreate: (user) => {
-        const salt = bcrypt.genSaltSync();
-        user.password = bcrypt.hashSync(user.dataValues.password, salt);
+        const salt = genSaltSync();
+        user.password = hashSync(user.dataValues.password, salt);
       }
     }
   });

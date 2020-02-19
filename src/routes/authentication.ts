@@ -1,7 +1,7 @@
 import express from "express";
 
 const db = require('../db/models'); //TODO migrate sequelize to typescript
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt';
 
 const router = express.Router();
 

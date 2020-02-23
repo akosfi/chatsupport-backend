@@ -15,9 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       as: 'chatAdmins',
       onDelete: 'CASCADE',
     });
-    ChatClient.hasMany(models.Chat, {
+    ChatClient.hasMany(models.GuestUser, {
       foreignKey: 'chat_client_id',
-      as: 'chats',
+      as: 'guestUsers',
       onDelete: 'CASCADE',
     });
   };

@@ -28,7 +28,17 @@ app.use(session({
 app.use(appRouter);
 
 io.on('connection', function(socket){
-    console.log('a user connected');
+    socket.emit('connected');
+    socket.on('identify', (data) => {
+        console.log(socket.id);
+        if(data.lc_license && data.guest_cookie) {
+            //save to db
+        }
+    });
+    socket.on('disconnect', () => {
+        console.log("disc")
+    });
+
 });
 
 const PORT = process.env.PORT || 3000;

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'chat',
       onDelete: 'cascade',
     });
-    GuestUser.hasMany(models.ChatMessages, {
+    GuestUser.hasMany(models.ChatMessage, {
       foreignKey: 'guest_user_id',
       as: 'messages',
       onDelete: 'CASCADE',

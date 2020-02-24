@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 
 import {router as appRouter} from './routes';
+import socketController from './socket';
+
 const db = require('./db/models'); //TODO migrate sequelize to typescript
 
 const app = express();
@@ -25,21 +27,9 @@ app.use(session({
         expires: new Date(Date.now() + 600000)
     }
 }));
+
 app.use(appRouter);
-
-io.on('connection', function(socket){
-    socket.emit('connected');
-    socket.on('identify', (data) => {
-        console.log(socket.id);
-        if(data.lc_license && data.guest_cookie) {
-            //save to db
-        }
-    });
-    socket.on('disconnect', () => {
-        console.log("disc")
-    });
-
-});
+io.on('connection', socketController);
 
 const PORT = process.env.PORT || 3000;
 

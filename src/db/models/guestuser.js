@@ -4,7 +4,6 @@ const uuidv4 = require('uuid');
 module.exports = (sequelize, DataTypes) => {
   const GuestUser = sequelize.define('GuestUser', {
     cookie: DataTypes.STRING,
-    socket_id: DataTypes.STRING,
     chat_client_id: DataTypes.INTEGER
   }, {
     classMethods: {
@@ -33,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'guest_user_id',
       as: 'messages',
       onDelete: 'CASCADE',
+    });
+    GuestUser.hasOne(models.ActiveUser, {
+      as: 'active',
+      foreignKey: 'user_id',
     });
   };
   return GuestUser;

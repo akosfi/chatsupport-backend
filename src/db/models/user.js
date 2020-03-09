@@ -5,8 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     username: DataTypes.STRING,
     email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    socket_id: DataTypes.STRING
+    password: DataTypes.STRING
   }, {
     hooks: {
       beforeCreate: (user) => {
@@ -25,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'admin_id',
       as: 'chatClientsAdministrated',
       onDelete: 'CASCADE',
+    });
+    User.hasOne(models.ActiveUser, {
+      as: 'active',
+      foreignKey: 'user_id',
     });
   };
   return User;

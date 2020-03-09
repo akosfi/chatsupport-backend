@@ -1,9 +1,19 @@
+import jwt from 'jsonwebtoken';
+
 const authMW = (req: any, res: any, next: any) => {
-    if (!req.session.user || !req.session.user.id) {
-        req.session.destroy();
-        return res.redirect('/login');
+    if(req.cookies.token){
+        jwt.verify(req.cookies.token, "secret", (err: any, decoded: any) => {
+            if(err) {
+                res.status(403);
+                return res.end();
+            }
+            return next();
+        });
     }
-    next();
+    else {
+        res.status(403);
+        return res.end();
+    }
 };
 
 export {authMW};

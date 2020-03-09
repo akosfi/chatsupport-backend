@@ -6,10 +6,6 @@ import bcrypt from 'bcrypt';
 const router = express.Router();
 
 router.get('/login', (req, res, next) => {
-    return res.render('pages/login');
-});
-
-router.post('/login', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
@@ -26,10 +22,6 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/register', (req, res, next) => {
-    return res.render('pages/register');
-});
-
-router.post('/register', (req, res, next) => {
     return db.User.create({
         username: req.body.username,
         email: req.body.email,

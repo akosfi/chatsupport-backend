@@ -28,6 +28,9 @@ app.use(session({
     }
 }));
 
+
+app.use('/socket.io', () => console.log("hi"));
+
 app.use(appRouter);
 io.on('connection', socketController);
 

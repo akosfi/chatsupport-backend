@@ -22,11 +22,12 @@ export default function socketController(socket: any) {
     });
 
     socket.on('disconnect', () => {
-        const user = db.GuestUser.findOneBySocket(socket.id);
-        if(user){
-            user.socket_id = '';
-            user.save();
-        }
+        /*return db.GuestUser.findOneBySocket(socket.id).then((user: any) => {
+            if(user){
+                user.socket_id = '';
+                user.save();
+            }
+        });*/
     });
 }
 

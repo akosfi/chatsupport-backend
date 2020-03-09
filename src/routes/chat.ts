@@ -3,19 +3,18 @@ import express from "express";
 var router = express.Router();
 
 router.get('/', (req, res, next) => {
-    return res.render('pages/chats');
-});
-
-router.get('/create', (req, res, next) => {
-    return res.send('chats');
+    //fetch all chat clients that the user has right to
+    return;
 });
 
 router.post('/create', (req, res, next) => {
-    return res.send('chats');
+    //create chat client
+    return;
 });
 
 router.get('/{id}', (req, res, next) => {
-    return res.send('chats');
+    //fetch guests of chat client specified by id
+    return;
 });
 
 

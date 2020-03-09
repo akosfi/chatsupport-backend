@@ -3,10 +3,8 @@ import express from "express";
 var router = express.Router();
 
 router.get('/', (req, res, next) => {
-    return res.send('get all messages');
-});
-router.post('/', (req, res, next) => {
-    return res.send('send message');
+    //fetch previous messages of user (or guest?)
+    return;
 });
 
 export {router};

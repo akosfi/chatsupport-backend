@@ -1,5 +1,3 @@
-import jwt from 'jsonwebtoken';
-
 const db = require('../db/models');
 
 export function onIncomingMessage(socket: any) {

@@ -10,9 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       findOneByCookie: function (cookie) {
         return GuestUser.findOne({ where: { cookie } });
       },
-      findOneBySocket: function (socket_id) {
-        return GuestUser.findOne({ where: { socket_id } });
-      },
       create: async function(chat_client_id) {
         const new_guest = GuestUser.build({
           cookie: uuidv4(),

@@ -6,12 +6,20 @@ import cookieParser from "cookie-parser";
 
 import {router as appRouter} from './routes';
 import socketController from './socket';
-
-const db = require('./db/models');
+import {sequelize} from './db/config/database'; 
+import {User}  from "./db/models";
 
 const app = express();
 const http = _http.createServer(app);
 const io = _io(http);
+
+
+app.get('/', async (req, res) => {
+    //const user = 
+    const users = await User.findAll();
+    console.log(users);
+    return res.send("hi");
+});
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')

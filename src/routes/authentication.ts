@@ -1,38 +1,68 @@
 import express from "express";
-
-const db = require('../db/models'); //TODO migrate sequelize to typescript
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+import {User} from "../db/models";
 
 const router = express.Router();
 
 router.get('/login', (req, res, next) => {
-    const username = req.body.username;
+    const email = req.body.email;
     const password = req.body.password;
 
-    return db.User.findOne({ where: { username: username } }).then((user: any) => {
+    return User.findOne({ where: { email } }).then((user: any) => {
         if (!user) {
-            return res.redirect('/login');
+            res.status(404);
+            return res.send({
+                code: 404,
+                message: "Wrong email/password."
+            });
         } else if (!bcrypt.compareSync(password, user.password)) {
-            return res.redirect('/login');
+            res.status(404);
+            return res.send({
+                code: 404,
+                message: "Wrong email/password."
+            });
         } else {
-            req.session.user = user.dataValues;
-            return res.redirect('/chat');
+            const token = jwt.sign({
+                email: user.email,
+                username: user.username,
+            }, 'secret');
+            res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+            res.status(200);
+            return res.send({
+                code: 200,
+                message: "Logged in successfully."
+            });
         }
     });
 });
 
 router.get('/register', (req, res, next) => {
-    return db.User.create({
+    return User.create({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password
     })
     .then((user: any) => {
-        req.session.user = user.dataValues;
-        return res.redirect('/chat');
+        const token = jwt.sign({
+            id: user.id,
+            email: user.email,
+            username: user.username,
+        }, 'secret');
+        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+        res.status(200);
+        return res.send({
+            code: 200,
+            message: "Registered successfully."
+        });
     })
     .catch((error: any) => {
-        return res.redirect('/register');
+        res.status(400);
+        return res.send({
+            code: 400,
+            message: "Wrong email/password."
+        });
     });
 });
 

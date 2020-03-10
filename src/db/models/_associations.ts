@@ -65,7 +65,7 @@ GuestUser.hasOne(ActiveUser, {
 User.hasMany(ChatClient, {
     sourceKey: 'id',
     foreignKey: 'owner_id',
-    as: 'chatclients'
+    as: 'chatClients'
 });
 User.hasMany(ChatAdmin, {
     sourceKey: 'id',

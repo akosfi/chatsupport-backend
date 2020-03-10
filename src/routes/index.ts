@@ -8,6 +8,6 @@ import {authMW} from "../middlewares/auth/authMW";
 const router = express.Router();
 
 router.use('/messages', messageRouter);
-router.use('/chat-client', authMW, chatRouter);
+router.use('/chat', authMW, chatRouter);
 
 export {router};

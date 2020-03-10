@@ -1,7 +1,7 @@
-import {Model, DataTypes } from 'sequelize';
+import {Model, DataTypes, Association } from 'sequelize';
 import {sequelize} from '../config/database';
 
-import { ChatClient, ChatAdmin, ActiveUser } from './';
+import { ChatClient } from './';
 
 export class User extends Model {
   public id!: Number;
@@ -11,6 +11,12 @@ export class User extends Model {
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public readonly chatClients?: ChatClient[]; 
+
+  public static associations: {
+    chatClients: Association<User, ChatClient>;
+  };
 }
 
 User.init({

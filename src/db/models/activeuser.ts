@@ -4,12 +4,16 @@ import {User, GuestUser} from './';
 
 export class ActiveUser extends Model {
   public id!: Number;
-  public socket_id!: Number;
+  public socket_id!: string;
   public user_id!: Number;
   public is_guest!: Boolean;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public static async findOneBySocketId (socket_id: string) {
+    return await ActiveUser.findOne({where: {socket_id}});
+  }
 }
 
 ActiveUser.init({
@@ -19,7 +23,7 @@ ActiveUser.init({
     primaryKey: true,
   },
   socket_id: {
-    type: DataTypes.INTEGER,
+    type: new DataTypes.STRING(128),
     allowNull: false
   },
   user_id: {

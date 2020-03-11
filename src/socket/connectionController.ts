@@ -1,24 +1,34 @@
 import jwt from 'jsonwebtoken';
-import { CHAT_LICENSE_ERROR, IDENTIFIED_GUEST, IDENTIFYING_USER_FAILED, IDENTIFYING_USER } from './constants';
-
-const db = require('../db/models');
+import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED } from './constants';
+import {GuestUser} from '../db/models';
 
 export function onGuestConnect(socket: any) {
-    return (data: any) => {
+    return async (data: any) => {
         if(!data.lc_license) return socket.emit(CHAT_LICENSE_ERROR); 
         else if (!data.guest_cookie) {
-            return addNewGuest(socket, data.lc_license);
+            const newGuest = GuestUser.createByChatClient(data.lc_license);
+            
+            if(!newGuest) {
+                return socket.emit(CHAT_LICENSE_ERROR); 
+            }
+
+            socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
         }
         else {
-            return db.GuestUser.findOneByCookie(data.guest_cookie).then((user: any) => {
-                if (!user) {   
-                    return addNewGuest(socket, data.lc_license);
-                } else {    
-                    user.socket_id = socket.id;
-                    user.save();
-                    socket.emit(IDENTIFIED_GUEST, {guest: user});
+            const guest = await GuestUser.findOne({where: {cookie: data.guest_cookie}});
+            
+            if(!guest) {
+                const newGuest = GuestUser.createByChatClient(data.lc_license);
+                
+                if(!newGuest) {
+                    return socket.emit(CHAT_LICENSE_ERROR); 
                 }
-            });
+
+                socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
+            } 
+            else {
+                socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest});
+            }
         }
     };
 }
@@ -28,28 +38,14 @@ export function onUserConnect(socket: any) {
     return (data: any) => {
         return jwt.verify(data.token, "secret", (err: any, decoded: any) => {
             if(err) return socket.emit(IDENTIFYING_USER_FAILED);
-            return socket.emit(IDENTIFYING_USER, {user: decoded.user});
+            return socket.emit(IDENTIFYING_USER_SUCCEEDED, {user: decoded.user});
         });
     }
 }
 
 
-export function onDisconnect(socket: any) {
+export function onDisconnect(socket_id: string) {
     return (data: any) => {
-        //delete from table activeusers
+        
     };
 } 
-
-
-async function addNewGuest(socket: any, license: any){
-    const chatClient = await db.ChatClient.findOne({where: { license }});
-    if(!chatClient) {
-      socket.emit(CHAT_LICENSE_ERROR);
-    }
-    else {
-      const new_guest = db.GuestUser.create(license);
-      new_guest.socket_id = socket.id;
-      new_guest.save();
-      socket.emit(IDENTIFIED_GUEST, {guest: new_guest});
-    }
-}

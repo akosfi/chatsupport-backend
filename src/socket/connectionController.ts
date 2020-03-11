@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
+import { CHAT_LICENSE_ERROR, IDENTIFIED_GUEST, IDENTIFYING_USER_FAILED, IDENTIFYING_USER } from './constants';
 
 const db = require('../db/models');
 
 export function onGuestConnect(socket: any) {
     return (data: any) => {
-        if(!data.lc_license) return socket.emit('lc_license_error'); 
+        if(!data.lc_license) return socket.emit(CHAT_LICENSE_ERROR); 
         else if (!data.guest_cookie) {
             return addNewGuest(socket, data.lc_license);
         }
@@ -15,7 +16,7 @@ export function onGuestConnect(socket: any) {
                 } else {    
                     user.socket_id = socket.id;
                     user.save();
-                    socket.emit('guest_identified', {guest: user});
+                    socket.emit(IDENTIFIED_GUEST, {guest: user});
                 }
             });
         }
@@ -26,8 +27,8 @@ export function onGuestConnect(socket: any) {
 export function onUserConnect(socket: any) {
     return (data: any) => {
         return jwt.verify(data.token, "secret", (err: any, decoded: any) => {
-            if(err) return socket.emit('user_error');
-            return socket.emit('user_identified', {user: decoded.user});
+            if(err) return socket.emit(IDENTIFYING_USER_FAILED);
+            return socket.emit(IDENTIFYING_USER, {user: decoded.user});
         });
     }
 }
@@ -43,12 +44,12 @@ export function onDisconnect(socket: any) {
 async function addNewGuest(socket: any, license: any){
     const chatClient = await db.ChatClient.findOne({where: { license }});
     if(!chatClient) {
-      socket.emit('lc_license_error');
+      socket.emit(CHAT_LICENSE_ERROR);
     }
     else {
       const new_guest = db.GuestUser.create(license);
       new_guest.socket_id = socket.id;
       new_guest.save();
-      socket.emit('guest_set', {guest: new_guest});
+      socket.emit(IDENTIFIED_GUEST, {guest: new_guest});
     }
 }

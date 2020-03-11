@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED } from './constants';
-import {GuestUser} from '../db/models';
+import {GuestUser, ActiveUser} from '../db/models';
 
 export function onGuestConnect(socket: any) {
     return async (data: any) => {
@@ -12,7 +12,7 @@ export function onGuestConnect(socket: any) {
                 return socket.emit(CHAT_LICENSE_ERROR); 
             }
 
-            socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
+            return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
         }
         else {
             const guest = await GuestUser.findOne({where: {cookie: data.guest_cookie}});
@@ -24,10 +24,10 @@ export function onGuestConnect(socket: any) {
                     return socket.emit(CHAT_LICENSE_ERROR); 
                 }
 
-                socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
+                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
             } 
             else {
-                socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest});
+                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest});
             }
         }
     };
@@ -45,7 +45,9 @@ export function onUserConnect(socket: any) {
 
 
 export function onDisconnect(socket_id: string) {
-    return (data: any) => {
-        
+    return async (data: any) => {
+        const activeUser = await ActiveUser.findOneBySocketId(socket_id);
+        activeUser.destroy();
+        return;
     };
 } 

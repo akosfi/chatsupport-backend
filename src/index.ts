@@ -13,13 +13,6 @@ const app = express();
 const http = _http.createServer(app);
 const io = _io(http);
 
-/*
-app.get('/', async (req, res) => {
-    const users = await User.findOne({where: {email: "asd"}});
-    console.log(users.email);
-    return res.send("hi");
-});*/
-
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')
 app.use(cookieParser());

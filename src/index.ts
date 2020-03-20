@@ -13,11 +13,21 @@ const app = express();
 const http = _http.createServer(app);
 const io = _io(http);
 
+
+app.use('/', (req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    next();
+});
+
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views')
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
+
 
 app.use('/api', appRouter);
 io.on('connection', socketController);

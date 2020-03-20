@@ -8,12 +8,27 @@ var router = express.Router();
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = await fetchUserFromRequest(req);
     
-    return res.send({
-        clients: user.chatClients 
-    });
+    const chatClient = await ChatClient.findOne({where: {owner_id: user.id.toString()}});
+
+
+    if(chatClient) {
+        res.status(200);
+        return res.send({
+            code: 200,
+            chatClient 
+        });
+    }
+    else {
+        res.status(404);
+        return res.send({
+            code: 404,
+            chatClient: null 
+        });
+    }
+
 });
 
-router.post('/create', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = await fetchUserFromRequest(req);
 
     const chatClient = await ChatClient.create({
@@ -24,7 +39,9 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction) =
     if(chatClient){
         res.status(200);
         return res.send({
-            client: {...chatClient}
+            code: 200,
+            message: 'ChatClient created successfully.',
+            client: chatClient
         });
     }
     else {
@@ -34,31 +51,7 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction) =
             message: 'Chat Client cannot be created!',
         });
     };
-
-    return;
 });
-
-router.get('/{id}', async (req: Request, res: Response, next: NextFunction) => {
-    const user = await fetchUserFromRequest(req);
-
-    //@ts-ignore
-    const chatClient = await _.find(user.chatClients, {'id': req.params.id });
-
-    if(chatClient){
-        res.status(200);
-        return res.send({
-            client: {...chatClient}
-        });
-    }
-    else {
-        res.status(404);
-        return res.send({
-            code: 404,
-            message: 'Chat Client cannot be found!',
-        });
-    };
-});
-
 
 const fetchUserFromRequest = async (req: Request) => {
     const user_token = jwt.decode(req.cookies.token) as { [key: string]: any; };

@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 import {Model, DataTypes } from 'sequelize';
 import {sequelize} from '../config/database';
 import {ChatClient} from './chatclient';
@@ -21,6 +23,11 @@ User.init({
   chat_token: { type: DataTypes.STRING },
 },{
   sequelize
+});
+
+User.addHook('beforeCreate', (user: User) => {
+  const salt = bcrypt.genSaltSync();
+  user.password = bcrypt.hashSync(user.password, salt);
 });
 
 User.hasMany(ChatClient, { foreignKey: 'owner_id', as: 'clients' });

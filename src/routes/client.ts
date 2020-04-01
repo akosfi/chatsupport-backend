@@ -41,7 +41,6 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction) => {
     const user_token = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
-
     const client = await ChatClient.findOne({
         where: { id: req.params.id },
         include: [{ model: GuestUser, as: 'guests' }]

@@ -1,46 +1,23 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
-import {ChatClient} from './';
+import {ChatMessage} from './chatmessage';
 
-export class GuestUser extends Model<GuestUser> {
+export class GuestUser extends Model {
   public id!: Number;
   public cookie!: string;
   public chat_client_id!: Number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-
-  public static async createByChatClient (license: string) {
-    const chatClient = await ChatClient.findOne({where: {license: license}});
-
-    if(!chatClient) return null;
-
-    const guestUser = await GuestUser.create({
-      cookie: Math.floor(Math.random()*100000000),
-      chat_client_id: chatClient.id
-    });
-
-    guestUser.save();
-    return guestUser;
-  }
 }
 
 GuestUser.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  cookie: {
-    type: new DataTypes.STRING(128),
-    allowNull: false
-  },
-  chat_client_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-},{sequelize});
+  id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+  cookie: { type: DataTypes.STRING },
+  chat_client_id: { type: DataTypes.INTEGER },
+},{
+  sequelize
+});
 
-
-GuestUser.sync({force: false}).then();
+GuestUser.hasMany(ChatMessage, { foreignKey: 'guest_user_id', as: 'messages'});
+ChatMessage.belongsTo(GuestUser, { foreignKey: 'guest_user_id', as: 'guest' });

@@ -1,6 +1,7 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
-import {User, GuestUser, ChatAdmin} from './';
+import {ChatAdmin} from './chatadmin';
+import {GuestUser} from './guestuser';
 
 export class ChatClient extends Model {
   public id!: Number;
@@ -13,19 +14,15 @@ export class ChatClient extends Model {
 
 
 ChatClient.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  license: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  owner_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-},{sequelize});
+  id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true, },
+  license: { type: DataTypes.INTEGER },
+  owner_id: { type: DataTypes.INTEGER },
+},{
+  sequelize
+});
 
-ChatClient.sync({force: false}).then();
+ChatClient.hasMany(ChatAdmin, { foreignKey: 'chat_client_id', as: 'admins' });
+ChatAdmin.belongsTo(ChatClient, { foreignKey: 'chat_client_id', as: 'clients' });
+
+ChatClient.hasMany(GuestUser, { foreignKey: 'chat_client_id', as: 'guests' });
+GuestUser.belongsTo(ChatClient, { foreignKey: 'chat_client_id', as: 'client' });

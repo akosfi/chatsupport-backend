@@ -34,5 +34,8 @@
     "tsc": "^1.20150623.0",
     "typescript": "^3.7.5",
     "uuid": "^7.0.0"
+  },
+  "scripts": {
+    "sync": "ts-node src/db/config/sync"
   }
 }

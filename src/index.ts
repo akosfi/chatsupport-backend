@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import {router as appRouter} from './routes';
 import socketController from './socket';
 import {sequelize} from './db/config/database'; 
-import {User}  from "./db/models";
 
 const app = express();
 const http = _http.createServer(app);

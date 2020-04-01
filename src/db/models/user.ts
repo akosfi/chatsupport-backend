@@ -1,7 +1,7 @@
-import {Model, DataTypes, Association } from 'sequelize';
+import {Model, DataTypes } from 'sequelize';
 import {sequelize} from '../config/database';
-
-import { ChatClient } from './';
+import {ChatClient} from './chatclient';
+import {ChatAdmin} from './chatadmin';
 
 export class User extends Model {
   public id!: Number;
@@ -11,32 +11,19 @@ export class User extends Model {
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  public readonly chatClients?: ChatClient[]; 
-
-  public static associations: {
-    chatClients: Association<User, ChatClient>;
-  };
 }
 
 User.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  username: {
-    type: new DataTypes.STRING(128),
-    allowNull: false
-  },
-  email: {
-    type: new DataTypes.STRING(128),
-    allowNull: false
-  },
-  password: {
-    type: new DataTypes.STRING(128),
-    allowNull: false
-  },
-},{sequelize});
+  id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+  username: { type: DataTypes.STRING },
+  email: { type: DataTypes.STRING },
+  password: { type: DataTypes.STRING },
+},{
+  sequelize
+});
 
-User.sync({force: false}).then();
+User.hasMany(ChatClient, { foreignKey: 'owner_id', as: 'clients' });
+ChatClient.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
+
+User.hasMany(ChatAdmin, { foreignKey: 'admin_id', as: 'clientsAdministrated' });
+ChatAdmin.belongsTo(User, { foreignKey: 'admin_id', as: 'user' });

@@ -1,6 +1,5 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
-import {User, GuestUser} from './';
 
 export class ChatMessage extends Model {
   public id!: Number;
@@ -13,23 +12,10 @@ export class ChatMessage extends Model {
 }
 
 ChatMessage.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  message: {
-    type: new DataTypes.STRING(256),
-    allowNull: false
-  },
-  guest_user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  sent_by_admin: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false
-  },
-},{sequelize});
-
-ChatMessage.sync({force: false}).then();
+  id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+  message: { type: DataTypes.STRING },
+  guest_user_id: { type: DataTypes.INTEGER },
+  from_admin: { type: DataTypes.BOOLEAN },
+},{
+  sequelize
+});

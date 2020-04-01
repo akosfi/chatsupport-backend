@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import {User} from "../db/models";
+import { authMW } from "../middlewares/auth/authMW";
 
 const router = express.Router();
 
@@ -12,22 +13,19 @@ router.post('/login', async(req, res, next) => {
 
     return User.findOne({ where: { username } }).then((user: any) => {
         if (!user) {
-            res.status(404);
-            return res.send({
+            return res.status(404).send({
                 code: 404,
                 message: "Wrong username/password."
             });
         } else if (password != user.password) { //!bcrypt.compareSync(password, user.password)
-            res.status(404);
-            return res.send({
+            return res.status(404).send({
                 code: 404,
                 message: "Wrong username/password."
             });
         } else {
             const token = signToken(user);
             res.cookie('token', token, { maxAge: 900000, httpOnly: true });
-            res.status(200);
-            return res.send({
+            return res.status(200).send({
                 code: 200,
                 message: "Logged in successfully.",
                 user
@@ -45,88 +43,62 @@ router.post('/register', (req, res, next) => {
     .then((user: User) => {
         const token = signToken(user);
         res.cookie('token', token, { maxAge: 900000, httpOnly: true });
-        res.status(200);
-        return res.send({
+        return res.status(200).send({
             code: 200,
             message: "Registered successfully."
         });
     })
     .catch((error: any) => {
         console.log(error);
-        res.status(400);
-        return res.send({
+        return res.status(400).send({
             code: 400,
             message: "Failed to register."
         });
     });
 });
 
-router.get('/me', (req, res, next) => {
-    return jwt.verify(req.cookies.token, 'secret', async (err: any, decoded: any) => {
-        if(err) {
-            res.status(401);
-            return res.send({
-                code: 401,
-                message: "JWT error."
-            }); 
-        }
-        else {
-            const user = await User.findOne({ where: { id: decoded.id } });
-            
-            if(!user) {
-                res.status(404);
-                return res.send({
-                    code: 404,
-                    message: "User not found."
-                });
-            }
-            else {
-                const token = signToken(user);
-                res.cookie('token', token, { maxAge: 900000, httpOnly: true });
-                res.status(200);
-                return res.send({
-                    code: 200,
-                    message: "User found.",
-                    user
-                });
-            }
-        }
-    });
+router.get('/me', authMW, async (req, res, next) => {
+    const decoded = jwt.verify(req.cookies.token, 'secret');
+    const user = await User.findOne({ where: { id: decoded['id'] } });
+
+    if(!user) {
+        return res.status(404).send({
+            code: 404,
+            message: "User not found."
+        });
+    }
+    else {
+        const token = signToken(user);
+        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+        return res.status(200).send({
+            code: 200,
+            message: "User found.",
+            user
+        });
+    }
 });
 
 
-router.get('/chat-token', (req, res, next) => {
-    return jwt.verify(req.cookies.token, 'secret', async (err: any, decoded: any) => {
-        if(err) {
-            res.status(401);
-            return res.send({
-                code: 401,
-                message: "JWT error."
-            }); 
-        }
-        else {
-            const user = await User.findOne({ where: { id: decoded.id } });
+router.get('/chat-token', authMW, async (req, res, next) => {
+    const decoded = JSON.parse(jwt.verify(req.cookies.token, 'secret') as string);
+    const user = await User.findOne({ where: { id: decoded.id } });
             
-            if(!user) {
-                res.status(404);
-                return res.send({
-                    code: 404,
-                    message: "User not found."
-                });
-            }
-            else {
-                user.chat_token = jwt.sign({
-                    number: Math.random() * 100000
-                }, 'secret');
-                user.save();
-                res.status(200);
-                return res.send({
-                    code: 200,
-                    chat_token: user.chat_token,
-                });
-            }
-        }
-    });
+    if(!user) {
+        return res.status(404).send({
+            code: 404,
+            message: "User not found."
+        });
+    }
+    else {
+        user.chat_token = jwt.sign({
+            number: Math.floor(Math.random() * 100000)
+        }, 'secret');
+        user.save();
+        return res.status(200).send({
+            code: 200,
+            chat_token: user.chat_token,
+        });
+    }
 });
 
 

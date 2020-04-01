@@ -1,7 +1,7 @@
 import express, {Request, Response, NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
-import {User, ChatClient} from '../db/models';
+import {User, ChatClient, GuestUser} from '../db/models/';
 
 var router = express.Router();
 
@@ -51,6 +51,39 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
             message: 'Chat Client cannot be created!',
         });
     };
+});
+
+router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction) => {
+    
+    const chatClient = await ChatClient.findOne({
+        where: {owner_id: 1},
+        include: [ChatClient.associations.guests]
+    });
+
+    const guest = await GuestUser.findOne({
+        include: [ChatClient]
+    });
+
+    console.log(chatClient.guests);
+    //where: {owner_id: user.id.toString()},
+
+    //guestUsers
+
+    if(!chatClient) {
+        res.status(404);
+        return res.send({
+            code: 404,
+            guests: null 
+        });
+    }
+
+    const guests = await GuestUser.findAll({where: {chat_client_id: chatClient.id.toString()}});
+
+    res.status(200);
+    return res.send({
+        code: 200,
+        guests 
+    });
 });
 
 const fetchUserFromRequest = async (req: Request) => {

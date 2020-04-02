@@ -14,10 +14,8 @@ router.get('/:id', async (req, res, next) => {
         return sendResponse(res, 404, "");
     }
     else {
-        return sendResponse(res, 200, "", { guest });
+        return sendResponse(res, 200, "", { messages: guest['messages'] });
     }
 });
-
-
 
 export {router};

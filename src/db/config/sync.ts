@@ -25,5 +25,12 @@ User.sync({force: true})
         return Guest.create({
             chat_client_id: 1,
         })
+    })
+    .then(() => {
+        return Message.create({
+            guest_user_id: 1,
+            message: "Szia!",
+            from_admin: false,
+        });
     });
 })

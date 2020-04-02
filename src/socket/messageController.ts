@@ -11,6 +11,7 @@ export function onIncomingMessage(socket: Socket) {
 
         const message = await MessageService.addMessage({
             message: data.message,
+            guest_user_id: data.guest_id,
             from_admin: !activeUser.is_guest
         });
 

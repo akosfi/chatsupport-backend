@@ -3,7 +3,7 @@ import { Message } from "../db/models/message";
 
 class MessageService {
     addMessage(options: any) {
-        return Message.create(...options);
+        return Message.create({...options});
     }
     getMessagesForGuest(guest_id) {
         return Message.findOne({where: {guest_id}});

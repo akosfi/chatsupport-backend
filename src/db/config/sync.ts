@@ -24,13 +24,23 @@ User.sync({force: true})
     .then(() => {
         return Guest.create({
             chat_client_id: 1,
-        })
+        });
     })
     .then(() => {
+        Guest.create({
+            chat_client_id: 1,
+        });
+        Guest.create({
+            chat_client_id: 1,
+        });
+        Guest.create({
+            chat_client_id: 1,
+        });
         return Message.create({
             guest_user_id: 1,
             message: "Szia!",
             from_admin: false,
         });
+
     });
 })

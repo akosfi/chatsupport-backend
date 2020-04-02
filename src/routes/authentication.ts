@@ -34,7 +34,6 @@ router.post('/register', async (req, res, next) => {
             password: req.body.password
         });
         const token = signUserToken(user);
-        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
         return sendResponse(res, 200, "Registered successfully.");
     }
     catch (error) {

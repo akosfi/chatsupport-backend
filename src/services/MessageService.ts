@@ -1,4 +1,4 @@
-import { Guest } from "../db/models/guestuser";
+import { Guest } from "../db/models/guest";
 import { Message } from "../db/models/message";
 
 class MessageService {

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED } from './constants';
-import {Guest} from '../db/models/guestuser';
+import {Guest} from '../db/models/guest';
 import ActiveUserService from '../services/ActiveUserService';
 import UserService from '../services/UserService';
 import GuestService from '../services/GuestService';
@@ -18,11 +18,10 @@ export function onGuestConnect(socket: any) {
             return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
         }
         else {
-            const guest = await Guest.findOne({where: {cookie: data.guest_cookie}});
+            const guest = await GuestService.findOne({where: {cookie: data.guest_cookie}});
             
             if(!guest) {
-                //const newGuest = GuestUser.createByChatClient(data.lc_license);
-                const newGuest = null;
+                const newGuest = await GuestService.addGuestByClientId(data.lc_license);
                 if(!newGuest) {
                     return socket.emit(CHAT_LICENSE_ERROR); 
                 }

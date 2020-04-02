@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import {sendResponse} from '../util';
 import { Client } from '../db/models/client';
-import { Guest } from '../db/models/guestuser';
+import { Guest } from '../db/models/guest';
 import { Message } from '../db/models/message';
 import { User } from '../db/models/user';
 

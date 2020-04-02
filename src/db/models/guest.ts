@@ -4,7 +4,7 @@ import {Message} from './message';
 
 export class Guest extends Model {
   public id!: Number;
-  public chat_token!: string;
+  public guest_cookie!: string;
   public chat_client_id!: Number;
 
   public readonly createdAt!: Date;
@@ -13,7 +13,7 @@ export class Guest extends Model {
 
 Guest.init({
   id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-  chat_token: { type: DataTypes.STRING },
+  guest_cookie: { type: DataTypes.STRING },
   chat_client_id: { type: DataTypes.INTEGER },
 },{
   sequelize

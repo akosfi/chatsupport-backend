@@ -1,5 +1,5 @@
 import express from "express";
-import {Guest} from '../db/models/guestuser';
+import {Guest} from '../db/models/guest';
 import {Message} from '../db/models/message';
 import {sendResponse} from '../util';
 

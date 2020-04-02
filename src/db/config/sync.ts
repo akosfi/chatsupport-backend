@@ -1,7 +1,7 @@
 import {ActiveUser} from '../models/activeuser';
 import {Client} from '../models/client';
 import {Message} from '../models/message';
-import {Guest} from '../models/guestuser';
+import {Guest} from '../models/guest';
 import {User} from '../models/user';
 
 User.sync({force: true})

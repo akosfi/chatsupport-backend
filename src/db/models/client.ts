@@ -1,7 +1,7 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
 import {User} from './user';
-import {Guest} from './guestuser';
+import {Guest} from './guest';
 
 export class Client extends Model {
   public id!: Number;

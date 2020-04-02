@@ -1,12 +1,12 @@
-import { GuestUser } from "../db/models/guestuser";
-import { ChatMessage } from "../db/models/chatmessage";
+import { Guest } from "../db/models/guestuser";
+import { Message } from "../db/models/message";
 
 class MessageService {
     addMessage(options: any) {
-        return ChatMessage.create(...options);
+        return Message.create(...options);
     }
     getMessagesForGuest(guest_id) {
-        return ChatMessage.findOne({where: {guest_id}});
+        return Message.findOne({where: {guest_id}});
     }
 }
 

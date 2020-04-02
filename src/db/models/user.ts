@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 
 import {Model, DataTypes } from 'sequelize';
 import {sequelize} from '../config/database';
-import {ChatClient} from './chatclient';
+import {Client} from './client';
 
 export class User extends Model {
   public id!: Number;
@@ -30,5 +30,5 @@ User.addHook('beforeCreate', (user: User) => {
   user.password = bcrypt.hashSync(user.password, salt);
 });
 
-User.hasMany(ChatClient, { foreignKey: 'owner_id', as: 'clients' });
-ChatClient.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });
+User.hasMany(Client, { foreignKey: 'owner_id', as: 'clients' });
+Client.belongsTo(User, { foreignKey: 'owner_id', as: 'owner' });

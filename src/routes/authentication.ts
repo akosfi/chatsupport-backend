@@ -57,7 +57,7 @@ router.get('/me', authMW, async (req, res, next) => {
 });
 
 
-router.get('/chat-token', async (req, res, next) => {
+router.get('/chat-token', authMW, async (req, res, next) => {
     const decoded = JSON.parse(jwt.verify(req.cookies.token, 'secret') as string);
     
     const user = await User.findOne({ where: { id: decoded.id } });
@@ -66,7 +66,7 @@ router.get('/chat-token', async (req, res, next) => {
     }
     else {
         user.chat_token = jwt.sign({
-            number: Math.floor(Math.random() * 100000)
+            id: user.id,
         }, 'secret');
         user.save();
         return sendResponse(res, 200, "", {chat_token: user.chat_token});

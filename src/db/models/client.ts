@@ -1,9 +1,9 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
 import {User} from './user';
-import {GuestUser} from './guestuser';
+import {Guest} from './guestuser';
 
-export class ChatClient extends Model {
+export class Client extends Model {
   public id!: Number;
   public license!: Number;
   public owner_id!: Number;
@@ -14,7 +14,7 @@ export class ChatClient extends Model {
 }
 
 
-ChatClient.init({
+Client.init({
   id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true, },
   license: { type: DataTypes.INTEGER },
   owner_id: { type: DataTypes.INTEGER }
@@ -22,5 +22,5 @@ ChatClient.init({
   sequelize
 });
 
-ChatClient.hasMany(GuestUser, { foreignKey: 'chat_client_id', as: 'guests' });
-GuestUser.belongsTo(ChatClient, { foreignKey: 'chat_client_id', as: 'client' });
+Client.hasMany(Guest, { foreignKey: 'chat_client_id', as: 'guests' });
+Guest.belongsTo(Client, { foreignKey: 'chat_client_id', as: 'client' });

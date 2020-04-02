@@ -1,18 +1,20 @@
 import {Socket} from 'socket.io';
 
-import {ActiveUser, ChatMessage} from '../db/models';
+import { Message} from '../db/models/message';
+import ActiveUserService from '../services/ActiveUserService';
 import { INCOMING_MESSAGE } from './constants';
+import MessageService from '../services/MessageService';
 
 export function onIncomingMessage(socket: Socket) {
     return async (data: any) => {
-        const activeUser = await ActiveUser.findOneBySocketId(socket.id); 
+        const activeUser = await ActiveUserService.getActiveUserBySocketId(socket.id);
 
-        const message = await ChatMessage.create({
+        const message = await MessageService.addMessage({
             message: data.message,
-            sent_by_admin: !activeUser.is_guest
+            from_admin: !activeUser.is_guest
         });
 
-        message.save();
+        await message.save();
 
         return socket.emit(INCOMING_MESSAGE, {message})
     };

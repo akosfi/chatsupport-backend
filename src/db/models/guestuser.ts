@@ -1,23 +1,23 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelize} from '../config/database';
-import {ChatMessage} from './chatmessage';
+import {Message} from './message';
 
-export class GuestUser extends Model {
+export class Guest extends Model {
   public id!: Number;
-  public cookie!: string;
+  public chat_token!: string;
   public chat_client_id!: Number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
-GuestUser.init({
+Guest.init({
   id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-  cookie: { type: DataTypes.STRING },
+  chat_token: { type: DataTypes.STRING },
   chat_client_id: { type: DataTypes.INTEGER },
 },{
   sequelize
 });
 
-GuestUser.hasMany(ChatMessage, { foreignKey: 'guest_user_id', as: 'messages'});
-ChatMessage.belongsTo(GuestUser, { foreignKey: 'guest_user_id', as: 'guest' });
+Guest.hasMany(Message, { foreignKey: 'guest_user_id', as: 'messages'});
+Message.belongsTo(Guest, { foreignKey: 'guest_user_id', as: 'guest' });

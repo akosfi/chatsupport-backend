@@ -1,13 +1,13 @@
 import {ActiveUser} from '../models/activeuser';
-import {ChatClient} from '../models/chatclient';
-import {ChatMessage} from '../models/chatmessage';
-import {GuestUser} from '../models/guestuser';
+import {Client} from '../models/client';
+import {Message} from '../models/message';
+import {Guest} from '../models/guestuser';
 import {User} from '../models/user';
 
 User.sync({force: true})
-.then(() => { return ChatClient.sync({force: true}); })
-.then(() => { return GuestUser.sync({force: true}); })
-.then(() => { return ChatMessage.sync({force: true}); })
+.then(() => { return Client.sync({force: true}); })
+.then(() => { return Guest.sync({force: true}); })
+.then(() => { return Message.sync({force: true}); })
 .then(() => { return ActiveUser.sync({force: true}); })
 .then(() => {
     User.create({
@@ -16,7 +16,7 @@ User.sync({force: true})
         email: 'emaill',
     })
     .then(() => {
-        return ChatClient.create({
+        return Client.create({
             license: 111,
         });
     })

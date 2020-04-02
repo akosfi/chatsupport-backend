@@ -1,6 +1,5 @@
 //GENERAL
 export const CONNECTED = 'CONNECTED';
-export const DISCONNECTED = 'DISCONNECTED';
 export const INCOMING_MESSAGE = 'INCOMING_MESSAGE';
 
 

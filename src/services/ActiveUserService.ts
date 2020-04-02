@@ -17,11 +17,14 @@ class ActiveUserService {
             socket_id
         });
     }
-    removeActiveUserByUserId(user_id: any, is_guest: any) {
-        return ActiveUser.destroy({where: {user_id, is_guest}});
-    }
-    removeActiveUserBySocketId(socket_id: any) {
-        return ActiveUser.destroy({where: {socket_id}});
+    removeActiveUser(options) {
+        return ActiveUser
+            .findOne({where: {...options}})
+            .then(user => {
+                if(user) {
+                    user.destroy();
+                }
+            });
     }
 }
 

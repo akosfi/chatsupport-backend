@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import {User} from '../db/models/user';
 
 export function sendResponse(response, code, message, misc = {}) {
-    return response.status(404).send({
+    return response.status(code).send({
         code,
         message,
         ...misc

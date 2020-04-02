@@ -11,16 +11,19 @@ User.sync({force: true})
 .then(() => { return ActiveUser.sync({force: true}); })
 .then(() => {
     User.create({
-        username: 'felhasznalonev',
-        password: 'jelszo',
-        email: 'emaill',
+        username: 'asd',
+        password: 'asd',
+        email: 'asd',
     })
     .then(() => {
         return Client.create({
             license: 111,
+            owner_id: 1,
         });
     })
     .then(() => {
-        
+        return Guest.create({
+            chat_client_id: 1,
+        })
     });
 })

@@ -10,6 +10,7 @@ import { User } from '../db/models/user';
 var router = express.Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.cookies.token);
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
     
     return Client.findOne({where: {owner_id: user.id}}).then((client) => {

@@ -53,8 +53,8 @@ export function onUserConnect(socket: any) {
 }
 
 
-export function onDisconnect(socket_id: string) {
+export function onDisconnect(socket) {
     return async (data: any) => {
-        await ActiveUserService.removeActiveUserBySocketId(socket_id);
+        await ActiveUserService.removeActiveUser({socket_id: socket.id});
     };
 } 

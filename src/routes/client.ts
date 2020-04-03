@@ -6,12 +6,12 @@ import { Client } from '../db/models/client';
 import { Guest } from '../db/models/guest';
 import { Message } from '../db/models/message';
 import { User } from '../db/models/user';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
+import ClientService from '../services/ClientService';
 
 var router = express.Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.cookies.token);
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
     
     return Client.findOne({where: {owner_id: user.id}}).then((client) => {
@@ -27,8 +27,8 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
-    return Client.create({
-        license: uuid(),
+    return ClientService.create({
+        license: Math.floor(Math.random() * 100000000),
         owner_id: user.id
     }).then(client => {
         if(client){
@@ -43,7 +43,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction) => {
     const user_token = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
-    const client = await Client.findOne({
+    const client = await ClientService.findOne({
         where: { id: req.params.id },
         include: [{ model: Guest, as: 'guests' }]
     });
@@ -56,7 +56,7 @@ router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction)
 });
 
 router.get('/:id/message', async (req: Request, res: Response, next: NextFunction) => {
-    const client = await Client.findOne({
+    const client = await ClientService.findOne({
         where: { id: req.params.id },
         include: [{ model: Message, as: 'messages' }]
     });

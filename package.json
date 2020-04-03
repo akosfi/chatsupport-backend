@@ -32,7 +32,7 @@
     "uuid": "^7.0.3"
   },
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "yarn sync && node dist/index.js",
     "build": "tsc && node copyfiles.js",
     "start-dev": "nodemon",
     "sync": "ts-node src/db/config/sync",

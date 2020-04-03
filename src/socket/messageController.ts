@@ -26,16 +26,16 @@ export function onIncomingMessage(io: any, socket: Socket) {
             const client = await ClientService.findOne({where: {id: guest.chat_client_id}});
             const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);
             if(owner) {
-                io.to(`${owner.socket_id}`).emit({message});
+                io.to(`${owner.socket_id}`).emit(INCOMING_MESSAGE, {message});
             }
         }
         else {
             const guest = await ActiveUserService.getActiveUserByUserId(data.guest_id, true);
             if(guest) {
-                io.to(`${guest.socket_id}`).emit({message});
+                io.to(`${guest.socket_id}`).emit(INCOMING_MESSAGE, {message});
             }
         }
-        return socket.emit(INCOMING_MESSAGE, {message})
+        return socket.emit(INCOMING_MESSAGE, {message});
     };
 }
 

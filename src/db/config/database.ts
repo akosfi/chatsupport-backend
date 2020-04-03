@@ -1,7 +1,10 @@
 import { Sequelize, Options } from "sequelize";
-import {config} from './config';
+import config from './config';
 
-export const sequelize = new Sequelize(config.development.url, config.development);
+
+const _config = (process.env.NODE_ENV === 'production') ? config['production'] : config['development']; 
+
+export const sequelize = new Sequelize(_config.url, _config);
 
 sequelize
     .authenticate()

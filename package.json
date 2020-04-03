@@ -17,11 +17,9 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
-    "ejs": "^3.0.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "jsonwebtoken": "^8.5.1",
-    "kill-port": "^1.6.0",
     "lodash": "^4.17.15",
     "nodemon": "^2.0.2",
     "pg": "^7.18.1",
@@ -31,14 +29,19 @@
     "sequelize-cli": "^5.5.1",
     "socket.io": "^2.3.0",
     "ts-node": "^8.6.2",
-    "tsc": "^1.20150623.0",
-    "typescript": "^3.7.5",
     "uuid": "^7.0.3"
   },
   "scripts": {
-    "start": "yarn build && node dist/index.js",
+    "start": "node dist/index.js",
     "build": "tsc && node copyfiles.js",
     "start-dev": "nodemon",
     "sync": "ts-node src/db/config/sync"
+  },
+  "devDependencies": {
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.7.5",
+    "kill-port": "^1.6.0",
+    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; NPM_CONFIG_PRODUCTION=false NODE_ENV=development npm install --only=dev --dev",
+    "heroku-postbuild": "yarn build && export NPM_CONFIG_PRODUCTION=true; export NODE_ENV=production;"
   }
 }

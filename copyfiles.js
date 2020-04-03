@@ -39,4 +39,4 @@ function copyFolderRecursiveSync( source, target ) {
 }
 
 
-copyFolderRecursiveSync('src/public', 'dist/public');
+copyFolderRecursiveSync('src/public', 'dist/');

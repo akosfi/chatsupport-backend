@@ -23,14 +23,14 @@ export function onIncomingMessage(io: any, socket: Socket) {
         if(activeUser.is_guest) {
             //todo join
             const guest = await GuestService.findOne({where: {id: activeUser.user_id}});
-            const client = await ClientService.findOne({where: {id: guest.id}});
+            const client = await ClientService.findOne({where: {id: guest.chat_client_id}});
             const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);
             if(owner) {
                 io.to(`${owner.socket_id}`).emit({message});
             }
         }
         else {
-            const guest = await ActiveUserService.getActiveUserBySocketId(data.guest_id);
+            const guest = await ActiveUserService.getActiveUserByUserId(data.guest_id, true);
             if(guest) {
                 io.to(`${guest.socket_id}`).emit({message});
             }

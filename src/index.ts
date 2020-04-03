@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-
+app.get('/', (req, res, next) => res.sendFile(__dirname + '/public/example.html'));
 app.use('/api', appRouter);
 io.on('connection', socketController);
 

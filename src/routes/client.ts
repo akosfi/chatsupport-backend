@@ -6,6 +6,7 @@ import { Client } from '../db/models/client';
 import { Guest } from '../db/models/guest';
 import { Message } from '../db/models/message';
 import { User } from '../db/models/user';
+import uuid from 'uuid';
 
 var router = express.Router();
 
@@ -27,7 +28,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
     return Client.create({
-        license: Math.floor(Math.random() * 1000000),
+        license: uuid(),
         owner_id: user.id
     }).then(client => {
         if(client){

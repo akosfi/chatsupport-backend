@@ -5,8 +5,8 @@ class MessageService {
     addMessage(options: any) {
         return Message.create({...options});
     }
-    getMessagesForGuest(guest_id) {
-        return Message.findOne({where: {guest_id}});
+    getMessagesForGuest(guest_user_id) {
+        return Message.findAll({where: {guest_user_id}});
     }
 }
 

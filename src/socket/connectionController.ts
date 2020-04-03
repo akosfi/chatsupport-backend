@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED } from './constants';
+import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED, GUEST_COOKIE_SET } from './constants';
 import {Guest} from '../db/models/guest';
 import ActiveUserService from '../services/ActiveUserService';
 import UserService from '../services/UserService';
@@ -15,10 +15,13 @@ export function onGuestConnect(socket: any) {
                 return socket.emit(CHAT_LICENSE_ERROR); 
             }
 
-            return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
+            await ActiveUserService.addActiveUser(newGuest.id, true, socket.id);
+
+            socket.emit(GUEST_COOKIE_SET, {guest_cookie: newGuest.guest_cookie});
+            return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
         }
         else {
-            const guest = await GuestService.findOne({where: {cookie: data.guest_cookie}});
+            const guest = await GuestService.findOne({where: {guest_cookie: data.guest_cookie}});
             
             if(!guest) {
                 const newGuest = await GuestService.addGuestByClientId(data.lc_license);
@@ -26,10 +29,15 @@ export function onGuestConnect(socket: any) {
                     return socket.emit(CHAT_LICENSE_ERROR); 
                 }
 
-                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest: newGuest});
+                await ActiveUserService.addActiveUser(newGuest.id, true, socket.id);
+            
+                socket.emit(GUEST_COOKIE_SET, {guest_cookie: newGuest.guest_cookie});
+                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
             } 
             else {
-                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED, {guest});
+                await ActiveUserService.addActiveUser(guest.id, true, socket.id);
+                
+                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
             }
         }
     };

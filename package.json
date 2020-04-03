@@ -33,7 +33,7 @@
     "ts-node": "^8.6.2",
     "tsc": "^1.20150623.0",
     "typescript": "^3.7.5",
-    "uuid": "^7.0.0"
+    "uuid": "^7.0.3"
   },
   "scripts": {
     "sync": "ts-node src/db/config/sync"

@@ -1,10 +1,14 @@
 import { Guest } from "../db/models/guest";
+import uuid from "uuid";
 
 class GuestService {
-    addGuestByClientId(client_id: any) {
-        return Guest.create({ client_id });
+    addGuestByClientId(chat_client_id: any) {
+        return Guest.create({ 
+            chat_client_id,
+            guest_cookie: uuid(),
+        });
     }
-    findOne(options) {
+    findOne(options: any) {
         return Guest.findOne({...options});
     }
 }

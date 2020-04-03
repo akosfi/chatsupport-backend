@@ -4,12 +4,15 @@ import {Guest} from '../db/models/guest';
 import ActiveUserService from '../services/ActiveUserService';
 import UserService from '../services/UserService';
 import GuestService from '../services/GuestService';
+import ClientService from '../services/ClientService';
 
 export function onGuestConnect(socket: any) {
     return async (data: any) => {
         if(!data.lc_license) return socket.emit(CHAT_LICENSE_ERROR); 
         else if (!data.guest_cookie) {
-            const newGuest = await GuestService.addGuestByClientId(data.lc_license);
+            const client = await ClientService.findOne({license: data.lc_license});
+
+            const newGuest = await GuestService.addGuestByClientId(client.id);
 
             if(!newGuest) {
                 return socket.emit(CHAT_LICENSE_ERROR); 
@@ -24,7 +27,10 @@ export function onGuestConnect(socket: any) {
             const guest = await GuestService.findOne({where: {guest_cookie: data.guest_cookie}});
             
             if(!guest) {
-                const newGuest = await GuestService.addGuestByClientId(data.lc_license);
+                const client = await ClientService.findOne({license: data.lc_license});
+
+                const newGuest = await GuestService.addGuestByClientId(client.id);
+                
                 if(!newGuest) {
                     return socket.emit(CHAT_LICENSE_ERROR); 
                 }

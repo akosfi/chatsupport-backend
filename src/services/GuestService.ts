@@ -1,5 +1,5 @@
 import { Guest } from "../db/models/guest";
-import uuid from "uuid";
+import {v4 as uuid} from "uuid";
 
 class GuestService {
     addGuestByClientId(chat_client_id: any) {

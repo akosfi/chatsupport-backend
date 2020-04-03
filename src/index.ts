@@ -26,9 +26,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', (req, res, next) => res.sendFile(__dirname + '/public/admin/index.html'));
 app.use('/api', appRouter);
-//io.on('connection', socketController);
+io.on('connection', socketController);
+
+app.get('*', (req, res, next) => res.sendFile(__dirname + '/public/index.html'));
 
 const PORT = process.env.PORT || 3000;
 

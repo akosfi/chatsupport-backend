@@ -10,7 +10,7 @@ export function onGuestConnect(socket: any) {
     return async (data: any) => {
         if(!data.lc_license) return socket.emit(CHAT_LICENSE_ERROR); 
         else if (!data.guest_cookie) {
-            const client = await ClientService.findOne({license: data.lc_license});
+            const client = await ClientService.findOne({where: {license: data.lc_license}});
 
             const newGuest = await GuestService.addGuestByClientId(client.id);
 
@@ -27,7 +27,7 @@ export function onGuestConnect(socket: any) {
             const guest = await GuestService.findOne({where: {guest_cookie: data.guest_cookie}});
             
             if(!guest) {
-                const client = await ClientService.findOne({license: data.lc_license});
+                const client = await ClientService.findOne({where: {license: data.lc_license}});
 
                 const newGuest = await GuestService.addGuestByClientId(client.id);
                 

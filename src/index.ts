@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 
 import {router as appRouter} from './routes';
 import socketController from './socket';
-import {sequelize} from './db/config/database'; 
+//import {sequelize} from './db/config/database'; 
 
 const app = express();
 const http = _http.createServer(app);
@@ -27,9 +27,9 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', (req, res, next) => res.sendFile(__dirname + '/public/example.html'));
-app.use('/api', appRouter);
-io.on('connection', socketController);
+app.get('/', (req, res, next) => res.sendFile(__dirname + '/public/admin/index.html'));
+//app.use('/api', appRouter);
+//io.on('connection', socketController);
 
 const PORT = process.env.PORT || 3000;
 

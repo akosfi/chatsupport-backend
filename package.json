@@ -36,6 +36,15 @@
     "uuid": "^7.0.3"
   },
   "scripts": {
-    "sync": "ts-node src/db/config/sync"
+    "start": "yarn build && node dist/index.js",
+    "build": "tsc && yarn copy-public",
+    "copy-public": "node_modules/.bin/ncp src/public dist/public",
+    "start-dev": "nodemon",
+    "sync": "ts-node src/db/config/sync",
+    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; NPM_CONFIG_PRODUCTION=false NODE_ENV=development npm install --only=dev --dev && npm build",
+    "heroku-postbuild": "export NPM_CONFIG_PRODUCTION=true; export NODE_ENV=production;"
+  },
+  "devDependencies": {
+    "ncp": "^2.0.0"
   }
 }

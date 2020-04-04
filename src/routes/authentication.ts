@@ -51,11 +51,15 @@ router.get('/me', authMW, async (req, res, next) => {
     }
     else {
         const token = signUserToken(user);
-        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+        res.cookie('token', token, { maxAge: 90000000, httpOnly: true });
         return sendResponse(res, 200, "User found.", { user });
     }
 });
 
+router.get('/logout', authMW, async (req, res, next) => {
+    res.cookie('token', '', { maxAge: 0, httpOnly: true });
+    return sendResponse(res, 200, "Logged out.", {});
+});
 
 router.get('/chat-token', authMW, async (req, res, next) => {
     const decoded = jwt.verify(req.cookies.token, 'secret');

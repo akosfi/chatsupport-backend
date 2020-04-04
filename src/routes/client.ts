@@ -87,7 +87,7 @@ router.get('/:id/admin', async (req, res, next) => {
 
 router.post('/:id/admin', async (req, res, next) => {
     const email = req.body.email;
-    const clientId = req.body.clientId;
+    const clientId = req.params.id;
     if(!email || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
 
     const userForAdmin = await User.findOne({where: {email}});

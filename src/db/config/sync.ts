@@ -41,6 +41,11 @@ User.sync({force: true})
             password: 'asd2',
             email: 'asd2',
             client_administrated_id: 1
+        });
+        User.create({
+            username: 'asd3',
+            password: 'asd3',
+            email: 'asd3',
         })
         return Message.create({
             guest_user_id: 1,

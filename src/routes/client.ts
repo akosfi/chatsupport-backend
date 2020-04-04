@@ -68,5 +68,34 @@ router.get('/:id/message', async (req: Request, res: Response, next: NextFunctio
     }
 });
 
+router.get('/:id/admin', async (req, res, next) => {
+    const client = await ClientService.findOne({
+        attributes: ['id'],
+        where: {id: req.params.id},
+        include: { 
+            model: User,
+            as: 'admins',
+        }
+    });
+    if(client) {
+        return sendResponse(res, 200, "", {admins: client['admins']});
+    }
+    else {
+        return sendResponse(res, 404, "");
+    }
+});
+
+router.post('/:id/admin', async (req, res, next) => {
+    const email = req.body.email;
+    const clientId = req.body.clientId;
+    if(!email || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
+
+    const userForAdmin = await User.findOne({where: {email}});
+    if(!userForAdmin) return sendResponse(res, 404, "User not existing with email!");
+
+    userForAdmin.client_administrated_id = clientId;
+    
+    return sendResponse(res, 200, "Admin was added succesfully!", {admin: userForAdmin});
+});
 
 export {router};

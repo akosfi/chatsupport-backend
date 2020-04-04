@@ -35,6 +35,7 @@
     "start": "yarn sync && node dist/index.js",
     "build": "tsc && node copyfiles.js",
     "start-dev": "nodemon",
+    "temp": "yarn sync && yarn nodemon",
     "sync": "ts-node src/db/config/sync",
     "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; NPM_CONFIG_PRODUCTION=false NODE_ENV=development npm install --only=dev --dev",
     "heroku-postbuild": "yarn build && export NPM_CONFIG_PRODUCTION=true; export NODE_ENV=production;"

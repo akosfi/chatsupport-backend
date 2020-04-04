@@ -36,6 +36,12 @@ User.sync({force: true})
         Guest.create({
             chat_client_id: 1,
         });
+        User.create({
+            username: 'asd2',
+            password: 'asd2',
+            email: 'asd2',
+            client_administrated_id: 1
+        })
         return Message.create({
             guest_user_id: 1,
             message: "Szia!",

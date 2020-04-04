@@ -94,8 +94,10 @@ router.post('/:id/admin', async (req, res, next) => {
     if(!userForAdmin) return sendResponse(res, 404, "User not existing with email!");
 
     userForAdmin.client_administrated_id = clientId;
+    await userForAdmin.save();
     
     return sendResponse(res, 200, "Admin was added succesfully!", {admin: userForAdmin});
+    
 });
 
 export {router};

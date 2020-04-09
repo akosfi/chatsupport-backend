@@ -8,10 +8,11 @@ import { Message } from '../db/models/message';
 import { User } from '../db/models/user';
 import {v4 as uuid} from 'uuid';
 import ClientService from '../services/ClientService';
+import { authMW } from '../middlewares/auth/authMW';
 
 var router = express.Router();
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
     
     return Client.findOne({where: {owner_id: user.id}}).then((client) => {
@@ -24,7 +25,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
     return ClientService.create({
@@ -40,7 +41,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:id/guest', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const user_token = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
     const client = await ClientService.findOne({
@@ -55,7 +56,7 @@ router.get('/:id/guest', async (req: Request, res: Response, next: NextFunction)
     }
 });
 
-router.get('/:id/message', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:id/message', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const client = await ClientService.findOne({
         where: { id: req.params.id },
         include: [{ model: Message, as: 'messages' }]
@@ -68,7 +69,7 @@ router.get('/:id/message', async (req: Request, res: Response, next: NextFunctio
     }
 });
 
-router.get('/:id/admin', async (req, res, next) => {
+router.get('/:id/admin', authMW, async (req, res, next) => {
     const client = await ClientService.findOne({
         attributes: ['id'],
         where: {id: req.params.id},
@@ -85,7 +86,7 @@ router.get('/:id/admin', async (req, res, next) => {
     }
 });
 
-router.post('/:id/admin', async (req, res, next) => {
+router.post('/:id/admin', authMW, async (req, res, next) => {
     const email = req.body.email;
     const clientId = req.params.id;
     if(!email || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");

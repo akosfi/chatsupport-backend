@@ -5,7 +5,8 @@ const authMW = (req, res, next) => {
     if(req.cookies.token){
         jwt.verify(req.cookies.token, "secret", (err: any, decoded: any) => {
             if(err) {
-                return res.send({
+                res.cookie('token', '', { maxAge: 0, httpOnly: true });
+                return res.status(401).send({
                     code: 401,
                     message: "Unauthorized."
                 });
@@ -14,7 +15,7 @@ const authMW = (req, res, next) => {
         });
     }
     else {
-        return res.send({
+        return res.status(401).send({
             code: 401,
             message: "Unauthorized."
         }); 

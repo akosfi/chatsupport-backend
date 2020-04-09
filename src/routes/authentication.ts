@@ -28,18 +28,13 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.post('/register', async (req, res, next) => {
-    try {
-        const user = await User.create({
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password
-        });
-        const token = signUserToken(user);
-        return sendResponse(res, 200, "Registered successfully.");
-    }
-    catch (error) {
-        return sendResponse(res, 400, "Failed to register!");
-    }
+    const user = await User.create({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password
+    });
+    user.save();
+    return sendResponse(res, 200, "Registered successfully.");
 });
 
 router.get('/me', authMW, async (req, res, next) => {

@@ -92,13 +92,26 @@ router.post('/:id/admin', authMW, async (req, res, next) => {
     if(!email || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
 
     const userForAdmin = await User.findOne({where: {email}});
-    if(!userForAdmin) return sendResponse(res, 404, "User not existing with email!");
+    if(!userForAdmin) return sendResponse(res, 404, "User not existing with specified email!");
 
     userForAdmin.client_administrated_id = clientId;
     await userForAdmin.save();
     
     return sendResponse(res, 200, "Admin was added succesfully!", {admin: userForAdmin});
+});
+
+router.delete('/:id/admin', authMW, async (req, res, next) => {
+    const admin = req.body.admin;
+    const clientId = req.params.id;
+    if(!admin || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
+
+    const userForAdmin = await User.findOne({where: {id: admin.id, client_administrated_id: clientId}});
+    if(!userForAdmin) return sendResponse(res, 404, "User not existing with specified email!");
+
+    userForAdmin.client_administrated_id = null;
+    await userForAdmin.save();
     
+    return sendResponse(res, 200, "Admin was removed succesfully!");
 });
 
 router.get('/:id/unseen', authMW, async (req, res, next) => {

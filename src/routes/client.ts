@@ -101,7 +101,7 @@ router.post('/:id/admin', authMW, async (req, res, next) => {
     
 });
 
-router.get('/:id/unseen', async (req, res, next) => {
+router.get('/:id/unseen', authMW, async (req, res, next) => {
     const clientId = req.params.id;
     
     const unseenMessages = await ClientService.getUnseenMessages(clientId);

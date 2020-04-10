@@ -2,7 +2,7 @@ import {Socket} from 'socket.io';
 
 import { Message} from '../db/models/message';
 import ActiveUserService from '../services/ActiveUserService';
-import { INCOMING_MESSAGE, GUEST_MESSAGES_SEND } from './constants';
+import { INCOMING_MESSAGE, INCOMING_MESSAGE_SEEN, GUEST_MESSAGES_SEND } from './constants';
 import MessageService from '../services/MessageService';
 import ClientService from '../services/ClientService';
 import GuestService from '../services/GuestService';
@@ -18,6 +18,8 @@ export function onIncomingMessage(io: any, socket: Socket) {
             from_admin: !activeUser.is_guest
         });
 
+        if(activeUser.is_guest == false) message.seen = true;
+        
         await message.save();
 
         if(activeUser.is_guest) {
@@ -37,6 +39,15 @@ export function onIncomingMessage(io: any, socket: Socket) {
         }
         return socket.emit(INCOMING_MESSAGE, {message});
     };
+}
+
+export function onIncomingMessageSeen(io: any, socket: Socket) {
+    return async (data: any) => {
+        const message = await MessageService.findOne({where: {id: data.message.id}});
+        message.seen = true;
+        message.save();
+        return;
+    }
 }
 
 export function onGuestMessagesGet(socket: Socket) {

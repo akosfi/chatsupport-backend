@@ -6,6 +6,7 @@ export class Message extends Model {
   public message!: string;
   public guest_user_id!: Number;
   public from_admin!: boolean;
+  public seen!: boolean;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -16,6 +17,7 @@ Message.init({
   message: { type: DataTypes.STRING },
   guest_user_id: { type: DataTypes.INTEGER },
   from_admin: { type: DataTypes.BOOLEAN },
+  seen: { type: DataTypes.BOOLEAN, defaultValue: false },
 },{
   sequelize
 });

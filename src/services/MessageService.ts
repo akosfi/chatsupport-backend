@@ -8,6 +8,9 @@ class MessageService {
     getMessagesForGuest(guest_user_id) {
         return Message.findAll({where: {guest_user_id}});
     }
+    findOne(options: any) {
+        return Message.findOne({...options});
+    }
 }
 
 export default new MessageService();

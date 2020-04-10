@@ -9,20 +9,28 @@ import { User } from '../db/models/user';
 import {v4 as uuid} from 'uuid';
 import ClientService from '../services/ClientService';
 import { authMW } from '../middlewares/auth/authMW';
+import UserService from '../services/UserService';
 
 var router = express.Router();
 
 router.get('/', authMW, async (req: Request, res: Response, next: NextFunction) => {
-    const user = jwt.decode(req.cookies.token) as { [key: string]: any; };
+    const decoded = jwt.decode(req.cookies.token) as { [key: string]: any; };
     
-    return Client.findOne({where: {owner_id: user.id}}).then((client) => {
+    const user = await User.findOne({where: {id: decoded['id']}});
+
+    if(user.client_administrated_id) {
+        const client = await Client.findOne({where: {id: user.client_administrated_id} });
         if(client) {
             return sendResponse(res, 200, "", {client});
         }
-        else {
-            return sendResponse(res, 404, "");
+    }
+    else {
+        const client = await Client.findOne({where: {owner_id: decoded.id} }); 
+        if(client) {
+            return sendResponse(res, 200, "", {client});
         }
-    });
+    }
+    return sendResponse(res, 404, "");
 });
 
 router.post('/', authMW, async (req: Request, res: Response, next: NextFunction) => {

@@ -21,7 +21,6 @@ export function onIncomingMessage(io: any, socket: Socket) {
         await message.save();
 
         if(activeUser.is_guest) {
-            //todo join
             const guest = await GuestService.findOne({where: {id: activeUser.user_id}});
             const client = await ClientService.findOne({where: {id: guest.chat_client_id}});
             const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);

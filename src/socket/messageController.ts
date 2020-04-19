@@ -22,7 +22,7 @@ export function onIncomingMessage(io: any, socket: Socket) {
 
         if(activeUser.is_guest) {
             const guest = await GuestService.findOne({where: {id: activeUser.user_id}});
-            const activeUsers = await ClientService.findActiveUsers({where: {id: guest.chat_client_id}});
+            const activeUsers = await ClientService.findActiveUsers(guest.chat_client_id);
             activeUsers.forEach(user => io.to(`${user.socket_id}`).emit(INCOMING_MESSAGE, {message}));
         }
         else {

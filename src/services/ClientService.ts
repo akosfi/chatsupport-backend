@@ -27,10 +27,12 @@ class ClientService {
         const client = await this.findOneWithAdmins({where: {id}});
         const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);
         if(owner) activeUsers.push(owner);
-        client['admins'].foreach(async (admin) => {
+        client['admins'].forEach(async (admin) => {
             const _admin = await ActiveUserService.getActiveUserByUserId(admin.id, false);
             if(_admin) activeUsers.push(_admin);
         });
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        console.log(activeUsers);
         return activeUsers;
     }
     create(options: any) {

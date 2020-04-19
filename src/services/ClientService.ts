@@ -3,6 +3,8 @@ import { Guest } from "../db/models/guest";
 import { Message } from "../db/models/message";
 import { Sequelize } from "sequelize";
 import { User } from "../db/models/user";
+import GuestService from "./GuestService";
+import ActiveUserService from "./ActiveUserService";
 
 class ClientService {
     findOne(options: any) {
@@ -19,6 +21,17 @@ class ClientService {
             ...options,
             include: [{ model: User, as: 'admins', attributes: ['id', 'username', 'email', 'chat_token', 'client_administrated_id']  }]
         });
+    }
+    async findActiveUsers(id) {
+        const activeUsers = [];
+        const client = await this.findOneWithAdmins({where: {id}});
+        const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);
+        if(owner) activeUsers.push(owner);
+        client['admins'].foreach(async (admin) => {
+            const _admin = await ActiveUserService.getActiveUserByUserId(admin.id, false);
+            if(_admin) activeUsers.push(_admin);
+        });
+        return activeUsers;
     }
     create(options: any) {
         return Client.create({...options});

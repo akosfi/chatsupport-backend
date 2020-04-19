@@ -6,7 +6,7 @@ export default function socketController(io: any) {
     return function(socket: any) {
         socket.emit(CONNECTED);
 
-        socket.on(IDENTIFY_GUEST, onGuestConnect(socket));
+        socket.on(IDENTIFY_GUEST, onGuestConnect(io, socket));
 
         socket.on(IDENTIFY_USER, onUserConnect(socket));
 

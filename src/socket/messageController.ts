@@ -22,11 +22,8 @@ export function onIncomingMessage(io: any, socket: Socket) {
 
         if(activeUser.is_guest) {
             const guest = await GuestService.findOne({where: {id: activeUser.user_id}});
-            const client = await ClientService.findOne({where: {id: guest.chat_client_id}});
-            const owner = await ActiveUserService.getActiveUserByUserId(client.owner_id, false);
-            if(owner) {
-                io.to(`${owner.socket_id}`).emit(INCOMING_MESSAGE, {message});
-            }
+            const activeUsers = await ClientService.findActiveUsers({where: {id: guest.chat_client_id}});
+            activeUsers.forEach(user => io.to(`${user.socket_id}`).emit(INCOMING_MESSAGE, {message}));
         }
         else {
             const guest = await ActiveUserService.getActiveUserByUserId(data.guest_id, true);

@@ -1,50 +1,47 @@
-import jwt from 'jsonwebtoken';
-import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED, GUEST_COOKIE_SET } from './constants';
+import { CHAT_LICENSE_ERROR, GUEST_JOINED, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED, GUEST_COOKIE_SET } from './constants';
 import ActiveUserService from '../services/ActiveUserService';
 import UserService from '../services/UserService';
 import GuestService from '../services/GuestService';
 import ClientService from '../services/ClientService';
 
-export function onGuestConnect(socket: any) {
+export function onGuestConnect(io: any, socket: any) {
     return async (data: any) => {
+        let client = null;
+        let guest = null;
         if(!data.lc_license) return socket.emit(CHAT_LICENSE_ERROR); 
         else if (!data.guest_cookie) {
-            const client = await ClientService.findOne({where: {license: data.lc_license}});
+            client = await ClientService.findOne({where: {license: data.lc_license}});
+            guest = await GuestService.addGuestByClientId(client.id);
 
-            const newGuest = await GuestService.addGuestByClientId(client.id);
-
-            if(!newGuest) {
+            if(!guest) {
                 return socket.emit(CHAT_LICENSE_ERROR); 
             }
 
-            await ActiveUserService.addActiveUser(newGuest.id, true, socket.id);
-
-            socket.emit(GUEST_COOKIE_SET, {guest_cookie: newGuest.guest_cookie});
-            return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
+            socket.emit(GUEST_COOKIE_SET, {guest_cookie: guest.guest_cookie});
         }
         else {
-            const guest = await GuestService.findOne({where: {guest_cookie: data.guest_cookie}});
+            guest = await GuestService.findOne({where: {guest_cookie: data.guest_cookie}});
             
             if(!guest) {
-                const client = await ClientService.findOne({where: {license: data.lc_license}});
-
-                const newGuest = await GuestService.addGuestByClientId(client.id);
+                client = await ClientService.findOne({where: {license: data.lc_license}});
+                guest = await GuestService.addGuestByClientId(client.id);
                 
-                if(!newGuest) {
+                if(!guest) {
                     return socket.emit(CHAT_LICENSE_ERROR); 
                 }
-
-                await ActiveUserService.addActiveUser(newGuest.id, true, socket.id);
             
-                socket.emit(GUEST_COOKIE_SET, {guest_cookie: newGuest.guest_cookie});
-                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
+                socket.emit(GUEST_COOKIE_SET, {guest_cookie: guest.guest_cookie});
             } 
             else {
-                await ActiveUserService.addActiveUser(guest.id, true, socket.id);
-                
-                return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
+                client = await ClientService.findOne({where: {id: guest.chat_client_id}});
             }
         }
+        await ActiveUserService.addActiveUser(guest.id, true, socket.id);
+
+        const activeUsers = await ClientService.findActiveUsers(client.id);
+        activeUsers.forEach((user) => io.to(`${user.socket_id}`).emit(GUEST_JOINED, {guest}));
+
+        return socket.emit(IDENTIFYING_GUEST_SUCCEEDED);
     };
 }
 

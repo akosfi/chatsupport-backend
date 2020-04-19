@@ -15,7 +15,10 @@ class ClientService {
         return this.findOne({...options, include: [{ model: Message, as: 'messages' }]});
     }
     findOneWithAdmins(options) {
-        return this.findOne({...options, include: [{ model: User, as: 'admins' }]});
+        return this.findOne({
+            ...options,
+            include: [{ model: User, as: 'admins', attributes: ['id', 'username', 'email', 'chat_token', 'client_administrated_id']  }]
+        });
     }
     create(options: any) {
         return Client.create({...options});

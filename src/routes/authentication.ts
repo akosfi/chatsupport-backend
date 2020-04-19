@@ -2,10 +2,9 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import {User} from "../db/models/user";
 import { authMW } from "../middlewares/auth/authMW";
 import { sendResponse, signUserToken } from "../util";
-import { decode } from "punycode";
+import UserService from "../services/UserService";
 
 const router = express.Router();
 
@@ -13,7 +12,7 @@ router.post('/login', async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    const user = await User.findOne({ where: { username } });
+    const user = await UserService.findOne({ where: { username } });
     if (!user) {
         return sendResponse(res, 404, "Wrong username/password.");
     }
@@ -28,7 +27,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.post('/register', async (req, res, next) => {
-    const user = await User.create({
+    const user = await UserService.create({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password
@@ -40,7 +39,7 @@ router.post('/register', async (req, res, next) => {
 router.get('/me', authMW, async (req, res, next) => {
     const decoded = jwt.verify(req.cookies.token, 'secret');
 
-    const user = await User.findOne({ where: { id: decoded['id'] } });
+    const user = await UserService.findOne({ where: { id: decoded['id'] } });
     if (!user) {
         return sendResponse(res, 401, "User not found.");
     }
@@ -59,7 +58,7 @@ router.get('/logout', authMW, async (req, res, next) => {
 router.get('/chat-token', authMW, async (req, res, next) => {
     const decoded = jwt.verify(req.cookies.token, 'secret');
     
-    const user = await User.findOne({ where: { id: decoded['id'] } });
+    const user = await UserService.findOne({ where: { id: decoded['id'] } });
     if(!user) {
         return sendResponse(res, 404, "User not found.", {user});
     }

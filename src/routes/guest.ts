@@ -1,13 +1,13 @@
 import express from "express";
-import {Guest} from '../db/models/guest';
 import {Message} from '../db/models/message';
 import {sendResponse} from '../util';
 import { authMW } from "../middlewares/auth/authMW";
+import GuestService from "../services/GuestService";
 
 const router = express.Router();
 
-router.get('/:id',  async (req, res, next) => {
-    const guest = await Guest.findOne({
+router.get('/:id', authMW, async (req, res, next) => {
+    const guest = await GuestService.findOne({
         where: { id: req.params.id },
         include: [{ model: Message, as: 'messages' }]
     });

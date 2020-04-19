@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { CHAT_LICENSE_ERROR, IDENTIFYING_GUEST_SUCCEEDED, IDENTIFYING_USER_FAILED, IDENTIFYING_USER_SUCCEEDED, IDENTIFYING_GUEST_FAILED, GUEST_COOKIE_SET } from './constants';
-import {Guest} from '../db/models/guest';
 import ActiveUserService from '../services/ActiveUserService';
 import UserService from '../services/UserService';
 import GuestService from '../services/GuestService';
@@ -52,7 +51,7 @@ export function onGuestConnect(socket: any) {
 
 export function onUserConnect(socket: any) {
     return async (data: any) => {
-        const user = await UserService.getUser({id: data.id});
+        const user = await UserService.findOne({where: {id: data.id}});
         
         if(user.chat_token !== data.token) {
             return socket.emit(IDENTIFYING_USER_FAILED);

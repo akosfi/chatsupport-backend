@@ -2,11 +2,6 @@ import express, {Request, Response, NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import {sendResponse} from '../util';
-import { Client } from '../db/models/client';
-import { Guest } from '../db/models/guest';
-import { Message } from '../db/models/message';
-import { User } from '../db/models/user';
-import {v4 as uuid} from 'uuid';
 import ClientService from '../services/ClientService';
 import { authMW } from '../middlewares/auth/authMW';
 import UserService from '../services/UserService';
@@ -16,16 +11,16 @@ var router = express.Router();
 router.get('/', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const decoded = jwt.decode(req.cookies.token) as { [key: string]: any; };
     
-    const user = await User.findOne({where: {id: decoded['id']}});
+    const user = await UserService.findOne({where: {id: decoded['id']}});
 
     if(user.client_administrated_id) {
-        const client = await Client.findOne({where: {id: user.client_administrated_id} });
+        const client = await ClientService.findOne({where: {id: user.client_administrated_id} });
         if(client) {
             return sendResponse(res, 200, "", {client});
         }
     }
     else {
-        const client = await Client.findOne({where: {owner_id: decoded.id} }); 
+        const client = await ClientService.findOne({where: {owner_id: decoded.id} }); 
         if(client) {
             return sendResponse(res, 200, "", {client});
         }
@@ -52,10 +47,7 @@ router.post('/', authMW, async (req: Request, res: Response, next: NextFunction)
 router.get('/:id/guest', authMW, async (req: Request, res: Response, next: NextFunction) => {
     const user_token = jwt.decode(req.cookies.token) as { [key: string]: any; };
 
-    const client = await ClientService.findOne({
-        where: { id: req.params.id },
-        include: [{ model: Guest, as: 'guests' }]
-    });
+    const client = await ClientService.findOneWithGuests({where: { id: req.params.id }});
     if (!client) {
         return sendResponse(res, 404, "");
     }
@@ -65,10 +57,7 @@ router.get('/:id/guest', authMW, async (req: Request, res: Response, next: NextF
 });
 
 router.get('/:id/message', authMW, async (req: Request, res: Response, next: NextFunction) => {
-    const client = await ClientService.findOne({
-        where: { id: req.params.id },
-        include: [{ model: Message, as: 'messages' }]
-    });
+    const client = await ClientService.findOneWithMessages({ where: { id: req.params.id } });
     if (!client) {
         return sendResponse(res, 404, "");
     }
@@ -78,13 +67,9 @@ router.get('/:id/message', authMW, async (req: Request, res: Response, next: Nex
 });
 
 router.get('/:id/admin', authMW, async (req, res, next) => {
-    const client = await ClientService.findOne({
+    const client = await ClientService.findOneWithAdmins({
         attributes: ['id'],
         where: {id: req.params.id},
-        include: { 
-            model: User,
-            as: 'admins',
-        }
     });
     if(client) {
         return sendResponse(res, 200, "", {admins: client['admins']});
@@ -99,7 +84,7 @@ router.post('/:id/admin', authMW, async (req, res, next) => {
     const clientId = req.params.id;
     if(!email || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
 
-    const userForAdmin = await User.findOne({where: {email}});
+    const userForAdmin = await UserService.findOne({where: {email}});
     if(!userForAdmin) return sendResponse(res, 404, "User not existing with specified email!");
 
     userForAdmin.client_administrated_id = clientId;
@@ -113,7 +98,7 @@ router.delete('/:id/admin', authMW, async (req, res, next) => {
     const clientId = req.params.id;
     if(!admin || !clientId) return sendResponse(res, 404, "No email/clientId was speicified!");
 
-    const userForAdmin = await User.findOne({where: {id: admin.id, client_administrated_id: clientId}});
+    const userForAdmin = await UserService.findOne({where: {id: admin.id, client_administrated_id: clientId}});
     if(!userForAdmin) return sendResponse(res, 404, "User not existing with specified email!");
 
     userForAdmin.client_administrated_id = null;

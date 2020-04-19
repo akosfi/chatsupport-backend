@@ -1,8 +1,11 @@
 import {User} from '../db/models/user';
 
 class UserService {
-    getUser(options: any) {
-        return User.findOne({where: {...options}});
+    findOne(options: any) {
+        return User.findOne({...options});
+    }
+    create(options: any) {
+        return User.create({...options});
     }
 }
 

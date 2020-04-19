@@ -1,12 +1,10 @@
 import {Socket} from 'socket.io';
 
-import { Message} from '../db/models/message';
 import ActiveUserService from '../services/ActiveUserService';
 import { INCOMING_MESSAGE, INCOMING_MESSAGE_SEEN, GUEST_MESSAGES_SEND } from './constants';
 import MessageService from '../services/MessageService';
 import ClientService from '../services/ClientService';
 import GuestService from '../services/GuestService';
-import UserService from '../services/UserService';
 
 export function onIncomingMessage(io: any, socket: Socket) {
     return async (data: any) => {
